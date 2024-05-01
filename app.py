@@ -30,7 +30,7 @@ def set_background(image_file):
     st.markdown(style, unsafe_allow_html=True)
 
 # Set background
-set_background('/Users/hajaryahia/Downloads/breast-cancer/bgs/bg5.jpg')
+set_background('bgs/bg5.jpg')
 
 # Set title
 st.title('Breast Cancer classification')
