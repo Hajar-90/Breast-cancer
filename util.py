@@ -1,5 +1,5 @@
 import base64
-
+import io
 import streamlit as st
 from PIL import ImageOps, Image
 import numpy as np
@@ -31,35 +31,41 @@ def set_background(image_file):
 
 def classify(image, model, class_names):
     """
-    This function takes an image, a model, and a list of class names and returns the predicted class and confidence
-    score of the image.
+    This function takes an image, a model, and a list of class names and returns the predicted class 
+    and confidence score of the image.
 
     Parameters:
-        image (PIL.Image.Image): An image to be classified.
+        image (PIL.Image.Image): The input image as a PIL Image object.
         model (tensorflow.keras.Model): A trained machine learning model for image classification.
         class_names (list): A list of class names corresponding to the classes that the model can predict.
 
     Returns:
         A tuple of the predicted class name and the confidence score for that prediction.
     """
-    # convert image to (224, 224)
-    image = ImageOps.fit(image, (64, 64), Image.Resampling.LANCZOS)
+    # Convert the image to grayscale if needed
+    if image.mode != 'L':
+        image = image.convert('L')
 
-    # convert image to numpy array
-    image_array = np.asarray(image)
+    # Resize and preprocess the image
+    img = image.resize((64, 64))
+    img = np.array(img) / 255.0
+    img = np.expand_dims(img, axis=0)
+    img = np.expand_dims(img, axis=-1)
 
-    # normalize image
-    normalized_image_array = (image_array.astype(np.float32) / 255.0) 
+    # Make prediction
+    predictions = model.predict(img)
+    
+    # Extract predicted class index
+    predicted_class_index = np.argmax(predictions[0])
+    label_mapping = {
+    0: 'Malignant',
+    1: 'Benign'
+    }
 
-    # set model input
-    data = np.ndarray(shape=(1, 64, 64, 1), dtype=np.float32)
-    data[0] = normalized_image_array
+# Get the predicted class name using the label mapping
+    predicted_class_name = label_mapping[predicted_class_index]
+    # Get class name and confidence score
 
-    # make prediction
-    prediction = model.predict(data)
-    # index = np.argmax(prediction)
-    index = 0 if prediction[0][0] > 0.95 else 1
-    class_name = class_names[index]
-    confidence_score = prediction[0][index]
+    return predicted_class_name
 
-    return class_name, confidence_score
+
