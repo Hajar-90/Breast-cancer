@@ -42,7 +42,7 @@ st.header('Please upload a Breast Mammography image')
 file = st.file_uploader('', type=['jpeg', 'jpg', 'png', 'pgm'])
 
 # Load classifier
-model = load_model('/Users/hajaryahia/Downloads/model-final.h5')
+model = load_model('model-final.h5')
 
 # Display image and classify
 if file is not None:
