@@ -1,4 +1,3 @@
-import setup.py
 import base64
 import streamlit as st
 from keras.models import load_model
