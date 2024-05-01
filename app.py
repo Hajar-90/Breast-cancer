@@ -30,7 +30,7 @@ def set_background(image_file):
     st.markdown(style, unsafe_allow_html=True)
 
 # Set background
-set_background('bgs/bg5.jpg')
+set_background('/workspaces/Breast-cancer/bgs/bg5.jpg')
 
 # Set title
 st.title('Breast Cancer classification')
@@ -42,7 +42,7 @@ st.header('Please upload a Breast Mammography image')
 file = st.file_uploader('', type=['jpeg', 'jpg', 'png', 'pgm'])
 
 # Load classifier
-model = load_model('model-final.h5')
+model = load_model('/workspaces/Breast-cancer/model-final.h5')
 
 # Display image and classify
 if file is not None:
