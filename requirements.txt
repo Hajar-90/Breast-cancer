@@ -5,3 +5,4 @@ Pillow
 numpy
 opencv-python
 opencv-python-headless
+apt-get update && apt-get install -y libgl1-mesa-glx
