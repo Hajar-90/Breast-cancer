@@ -43,18 +43,20 @@ file = st.file_uploader('', type=['jpeg', 'jpg', 'png', 'pgm'])
 
 # Load classifier
 model = load_model('model-final.h5')
+# load class names
+with open('./model/labels.txt', 'r') as f:
+    class_names = [a[:-1].split(' ')[1] for a in f.readlines()]
+    f.close()
 
-# Display image and classify
+# display image
 if file is not None:
-    image = file.read()  # Read the uploaded image file as bytes
-    
-    # Classify image
-    class_name = classify(image, model)
+    image = Image.open(file).convert('RGB')
+    st.image(image, use_column_width=True)
 
-    # Display the uploaded image
-    img = Image.open(file).convert('RGB')
-    st.image(img, use_column_width=True)
+    # classify image
+    class_name, conf_score = classify(image, model, class_names)
 
-    # Write classification result
-    st.write("## Predicted Class: {}".format(class_name))
+    # write classification
+    st.write("## {}".format(class_name))
+    st.write("### score: {}%".format(int(conf_score * 1000) / 10))
 
