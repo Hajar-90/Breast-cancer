@@ -3,5 +3,5 @@ tensorflow
 streamlit
 Pillow
 numpy
-opencv-python
+opencv-python==4.5.5.62
 opencv-python-headless
