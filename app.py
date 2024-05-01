@@ -6,7 +6,7 @@ import numpy as np
 from util import classify, set_background
 
 
-set_background('/Users/hajaryahia/Downloads/breast-cancer/Hajar-app/breast-cancer/bgs/bg5.jpg')
+set_background('bgs/bg5.jpg')
 
 # set title
 st.title('Breast Cancer classification')
@@ -18,7 +18,7 @@ st.header('Please upload a Breast Mammography image')
 file = st.file_uploader('', type=['jpeg', 'jpg', 'png','pgm'])
 
 # load classifier
-model = load_model('/Users/hajaryahia/Downloads/breast-cancer/model-final.h5')
+model = load_model('model-final.h5')
 
 # load class names
 with open('/Users/hajaryahia/Downloads/breast-cancer/model/labels.txt', 'r') as f:
