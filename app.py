@@ -9,13 +9,21 @@ import joblib
 knn = joblib.load('knn_model.pkl')
 scaler = joblib.load('scaler.pkl')
 # Function to highlight the gray range and negate the image
-def create_heatmap(image_np, gray_lower, gray_upper):
+def highlight_gray_range(image_np, gray_lower, gray_upper):
     mask = (image_np >= gray_lower) & (image_np <= gray_upper)
-    heatmap = np.where(mask, 1, 0)
-    return heatmap, mask
+    highlighted_image = np.where(mask, image_np, 0)
+    return highlighted_image, mask
+
+# Function to create the highlighted overlay with red
+def highlight_with_red(image_np, mask):
+    # Create an RGB image from the grayscale image
+    rgb_image = np.stack((image_np,) * 3, axis=-1)
+    # Highlight the masked area with red
+    rgb_image[mask] = [255, 0, 0]  # Red color for the masked area
+    return rgb_image
 
 # Main streamlit app
-st.title('Mammogram Gray Range Heatmap')
+st.title('Mammogram Gray Range Highlighter')
 
 # Sidebar inputs for gray range
 st.sidebar.header('Select Gray Range')
@@ -30,23 +38,26 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file).convert('L')  # Convert to grayscale
     image_np = np.array(image)
 
-    # Create heatmap and mask
-    heatmap, mask = create_heatmap(image_np, gray_lower, gray_upper)
+    # Apply the gray range filter and get the mask
+    highlighted_image, mask = highlight_gray_range(image_np, gray_lower, gray_upper)
 
     # Display the original image
     st.image(image_np, caption='Original Image', use_column_width=True, channels='GRAY')
 
-    # Display the heatmap
-    st.image(heatmap, caption='Heatmap', use_column_width=True, channels='GRAY')
+    # Display the highlighted image
+    st.image(highlighted_image, caption='Highlighted Image', use_column_width=True, channels='GRAY')
 
-    # Plot the mask and the heatmap overlay
+    # Create the highlighted overlay with red
+    highlighted_overlay = highlight_with_red(image_np, mask)
+
+    # Plot the mask and the highlighted overlay
     fig, axs = plt.subplots(1, 2)
     axs[0].imshow(mask, cmap='gray')
     axs[0].set_title('Mask')
     axs[0].axis('off')
 
-    axs[1].imshow(heatmap, cmap='hot', interpolation='nearest')
-    axs[1].set_title('Heatmap Overlay')
+    axs[1].imshow(highlighted_overlay)
+    axs[1].set_title('Highlighted Overlay')
     axs[1].axis('off')
 
     # Show the plot
