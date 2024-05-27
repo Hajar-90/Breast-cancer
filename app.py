@@ -7,6 +7,39 @@ from util import classify, set_background
 import joblib
 knn = joblib.load('knn_model.pkl')
 scaler = joblib.load('scaler.pkl')
+st.title('Mammogram Gray Range Highlighter')
+
+# Sidebar inputs for gray range
+st.sidebar.header('Select Gray Range')
+gray_lower = st.sidebar.slider('Lower Bound of Gray Range', 0, 255, 50)
+gray_upper = st.sidebar.slider('Upper Bound of Gray Range', 0, 255, 150)
+
+# File uploader for mammogram image
+uploaded_file = st.file_uploader("Upload a Mammogram Image", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None:
+    # Load the image using PIL
+    image = Image.open(uploaded_file).convert('L')  # Convert to grayscale
+    image_np = np.array(image)
+
+    # Create a mask with the specified gray range
+    mask = cv2.inRange(image_np, gray_lower, gray_upper)
+
+    # Apply the mask to the image to highlight the desired areas
+    highlighted_image = cv2.bitwise_and(image_np, image_np, mask=mask)
+
+    # Convert the grayscale image and mask to 3-channel images for overlay
+    image_rgb = cv2.cvtColor(image_np, cv2.COLOR_GRAY2BGR)
+    mask_rgb = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+
+    # Overlay the mask on the original image
+    highlighted_overlay = cv2.addWeighted(image_rgb, 0.7, mask_rgb, 0.3, 0)
+
+    # Display the original image, mask, and the highlighted image
+    st.image(image_np, caption='Original Image', use_column_width=True, channels='GRAY')
+    st.image(mask, caption='Mask', use_column_width=True, channels='GRAY')
+    st.image(highlighted_overlay, caption='Highlighted Overlay', use_column_width=True)
+
 set_background('bgs/bg5.jpg')
 
 # set title
