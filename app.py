@@ -9,17 +9,18 @@ import joblib
 knn = joblib.load('knn_model.pkl')
 scaler = joblib.load('scaler.pkl')
 # Function to highlight the gray range and negate the image
+# Function to highlight the gray range
 def highlight_gray_range(image_np, gray_lower, gray_upper):
     mask = (image_np >= gray_lower) & (image_np <= gray_upper)
     highlighted_image = np.where(mask, image_np, 0)
     return highlighted_image, mask
 
 # Function to create the highlighted overlay with red
-def highlight_with_red(image_np, mask):
+def highlight_background_with_red(image_np, mask):
     # Create an RGB image from the grayscale image
     rgb_image = np.stack((image_np,) * 3, axis=-1)
-    # Highlight the masked area with red
-    rgb_image[mask] = [255, 0, 0]  # Red color for the masked area
+    # Highlight the background (outside the mask) with red
+    rgb_image[~mask] = [255, 0, 0]  # Red color for the background
     return rgb_image
 
 # Main streamlit app
@@ -47,8 +48,8 @@ if uploaded_file is not None:
     # Display the highlighted image
     st.image(highlighted_image, caption='Highlighted Image', use_column_width=True, channels='GRAY')
 
-    # Create the highlighted overlay with red
-    highlighted_overlay = highlight_with_red(image_np, mask)
+    # Create the highlighted overlay with red for the background
+    highlighted_overlay = highlight_background_with_red(image_np, mask)
 
     # Plot the mask and the highlighted overlay
     fig, axs = plt.subplots(1, 2)
