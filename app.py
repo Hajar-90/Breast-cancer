@@ -8,13 +8,12 @@ from util import classify, set_background
 import joblib
 knn = joblib.load('knn_model.pkl')
 scaler = joblib.load('scaler.pkl')
-# Streamlit app title
-def highlight_gray_range(image_np, lower_bound, upper_bound):
-    mask = (image_np >= lower_bound) & (image_np <= upper_bound)
-    highlighted_image = np.where(mask, image_np, 255)  # Set non-highlighted pixels to white
-    return highlighted_image
+def highlight_gray_range(image_np, gray_lower, gray_upper):
+    mask = (image_np >= gray_lower) & (image_np <= gray_upper)
+    highlighted_image = np.where(mask, image_np, 0)
+    return highlighted_image, mask
 
-# Streamlit app title
+# Main streamlit app
 st.title('Mammogram Gray Range Highlighter')
 
 # Sidebar inputs for gray range
@@ -30,15 +29,29 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file).convert('L')  # Convert to grayscale
     image_np = np.array(image)
 
-    # Apply the gray range filter
-    highlighted_image = highlight_gray_range(image_np, gray_lower, gray_upper)
+    # Apply the gray range filter and get the mask
+    highlighted_image, mask = highlight_gray_range(image_np, gray_lower, gray_upper)
 
-    # Display the original image and the highlighted image
+    # Display the original image
+    st.image(image_np, caption='Original Image', use_column_width=True, channels='GRAY')
+
+    # Display the highlighted image
     st.image(highlighted_image, caption='Highlighted Image', use_column_width=True, channels='GRAY')
 
-# Instructions to the user
-st.write("Adjust the sliders in the sidebar to change the gray range for highlighting.")
+    # Display the mask
+    plt.subplot(1, 3, 2)
+    plt.title('Mask')
+    plt.imshow(mask, cmap='gray')
+    plt.axis('off')
 
+    # Display the highlighted overlay
+    plt.subplot(1, 3, 3)
+    plt.title('Highlighted Overlay')
+    plt.imshow(highlighted_image, cmap='gray')
+    plt.axis('off')
+
+    # Show the plot
+    st.pyplot()
 set_background('bgs/bg5.jpg')
 
 # set title
