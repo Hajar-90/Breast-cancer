@@ -40,6 +40,9 @@ if uploaded_file is not None:
     st.image(mask, caption='Mask', use_column_width=True, channels='GRAY')
     st.image(highlighted_overlay, caption='Highlighted Overlay', use_column_width=True)
 
+# Instructions to the user
+st.write("Adjust the sliders in the sidebar to change the gray range for highlighting.")
+
 set_background('bgs/bg5.jpg')
 
 # set title
