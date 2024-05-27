@@ -4,8 +4,9 @@ from PIL import Image
 import numpy as np
 
 from util import classify, set_background
-
-
+import joblib
+knn = joblib.load('knn_model.pkl')
+scaler = joblib.load('scaler.pkl')
 set_background('bgs/bg5.jpg')
 
 # set title
@@ -47,38 +48,26 @@ worst_symmetry = st.text_input('Worst Symmetry')
 worst_fractal_dimension = st.text_input('Worst Fractal Dimension')
 
 # Add a button to submit the data
-if st.button('Submit'):
-    # Display the entered data
-    st.write('Entered Parameters:')
-    st.write('Mean Radius:', mean_radius)
-    st.write('Mean Texture:', mean_texture)
-    st.write('Mean Perimeter:', mean_perimeter)
-    st.write('Mean Area:', mean_area)
-    st.write('Mean Smoothness:', mean_smoothness)
-    st.write('Mean Compactness:', mean_compactness)
-    st.write('Mean Concavity:', mean_concavity)
-    st.write('Mean Concave Points:', mean_concave_points)
-    st.write('Mean Symmetry:', mean_symmetry)
-    st.write('Mean Fractal Dimension:', mean_fractal_dimension)
-    st.write('Radius Error:', radius_error)
-    st.write('Texture Error:', texture_error)
-    st.write('Perimeter Error:', perimeter_error)
-    st.write('Area Error:', area_error)
-    st.write('Smoothness Error:', smoothness_error)
-    st.write('Compactness Error:', compactness_error)
-    st.write('Concavity Error:', concavity_error)
-    st.write('Concave Points Error:', concave_points_error)
-    st.write('Symmetry Error:', symmetry_error)
-    st.write('Fractal Dimension Error:', fractal_dimension_error)
-    st.write('Worst Radius:', worst_radius)
-    st.write('Worst Texture:', worst_texture)
-    st.write('Worst Perimeter:', worst_perimeter)
-    st.write('Worst Area:', worst_area)
-    st.write('Worst Smoothness:', worst_smoothness)
-    st.write('Worst Compactness:', worst_compactness)
-    st.write('Worst Concavity:', worst_concavity)
-    st.write('Worst Concave Points:', worst_concave_points)
-    st.write('Worst Symmetry:', worst_symmetry)
-    st.write('Worst Fractal Dimension:', worst_fractal_dimension)
-
-
+if st.button('Predict'):
+    # Collect the entered data
+    data = np.array([
+        mean_radius, mean_texture, mean_perimeter, mean_area, mean_smoothness, 
+        mean_compactness, mean_concavity, mean_concave_points, mean_symmetry, 
+        mean_fractal_dimension, radius_error, texture_error, perimeter_error, 
+        area_error, smoothness_error, compactness_error, concavity_error, 
+        concave_points_error, symmetry_error, fractal_dimension_error, worst_radius, 
+        worst_texture, worst_perimeter, worst_area, worst_smoothness, worst_compactness, 
+        worst_concavity, worst_concave_points, worst_symmetry, worst_fractal_dimension
+    ], dtype=float).reshape(1, -1)
+    
+    # Scale the input data
+    data_scaled = scaler.transform(data)
+    
+    # Make a prediction
+    prediction = knn.predict(data_scaled)
+    prediction_proba = knn.predict_proba(data_scaled)
+    
+    # Display the result
+    result = 'Malignant' if prediction[0] == 1 else 'Benign'
+    st.write(f'Prediction: {result}')
+    st.write(f'Prediction Probability: {prediction_proba[0]}')
