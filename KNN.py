@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 import joblib
 
 # Load your dataset
-df = pd.read_csv('\cancer-classification.csv')
+df = pd.read_csv('cancer_classification.csv')
 
 # Define your feature columns and target column
 feature_columns = ['mean radius', 'mean texture', 'mean perimeter', 'mean area',
