@@ -4,3 +4,4 @@ streamlit
 Pillow
 numpy
 opencv-python
+joblib
