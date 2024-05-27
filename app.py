@@ -2,6 +2,7 @@ import streamlit as st
 from keras.models import load_model
 from PIL import Image
 import numpy as np
+import matplotlib.pyplot as plt
 
 from util import classify, set_background
 import joblib
@@ -9,32 +10,36 @@ knn = joblib.load('knn_model.pkl')
 scaler = joblib.load('scaler.pkl')
 # Streamlit app title
 st.title('Mammogram Gray Range Highlighter')
-
-# Sidebar inputs for gray range
-st.sidebar.header('Select Gray Range')
-gray_lower = st.sidebar.slider('Lower Bound of Gray Range', 0, 255, 50)
-gray_upper = st.sidebar.slider('Upper Bound of Gray Range', 0, 255, 150)
-
-# File uploader for mammogram image
-uploaded_file = st.file_uploader("Upload a Mammogram Image", type=["jpg", "jpeg", "png","pgm"])
-
-if uploaded_file is not None:
-    # Load the image using PIL
-    image = Image.open(uploaded_file).convert('L')  # Convert to grayscale
-    image_np = np.array(image)
-
-    # Apply the gray range filter
-    mask = (image_np >= gray_lower) & (image_np <= gray_upper)
-
-    # Highlighted image using the mask
+def highlight_gray_range(image_np, lower_bound, upper_bound):
+    mask = (image_np >= lower_bound) & (image_np <= upper_bound)
     highlighted_image = np.where(mask, image_np, 0)
+    return highlighted_image
+# Sidebar inputs for gray range
+# Sidebar inputs for gray range
+    st.sidebar.header('Select Gray Range')
+    gray_lower = st.sidebar.slider('Lower Bound of Gray Range', 0, 255, 50)
+    gray_upper = st.sidebar.slider('Upper Bound of Gray Range', 0, 255, 150)
 
-    # Display the original image and the highlighted image
-    st.image(image_np, caption='Original Image', use_column_width=True, channels='GRAY')
-    st.image(highlighted_image, caption='Highlighted Image', use_column_width=True, channels='GRAY')
+    # File uploader for mammogram image
+    uploaded_file = st.file_uploader("Upload a Mammogram Image", type=["jpg", "jpeg", "png", "pgm"])
 
-# Instructions to the user
-st.write("Adjust the sliders in the sidebar to change the gray range for highlighting.")
+    if uploaded_file is not None:
+        # Load the image using PIL
+        image = Image.open(uploaded_file).convert('L')  # Convert to grayscale
+        image_np = np.array(image)
+
+        # Apply the gray range filter
+        highlighted_image = highlight_gray_range(image_np, gray_lower, gray_upper)
+
+        # Display the original image and the highlighted image
+        st.image(image_np, caption='Original Image', use_column_width=True, channels='GRAY')
+        st.image(highlighted_image, caption='Highlighted Image', use_column_width=True, channels='GRAY')
+
+    # Instructions to the user
+    st.write("Adjust the sliders in the sidebar to change the gray range for highlighting.")
+
+    
+
 set_background('bgs/bg5.jpg')
 
 # set title
