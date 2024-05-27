@@ -38,20 +38,18 @@ if uploaded_file is not None:
     # Display the highlighted image
     st.image(highlighted_image, caption='Highlighted Image', use_column_width=True, channels='GRAY')
 
-    # Display the mask
-    plt.subplot(1, 3, 2)
-    plt.title('Mask')
-    plt.imshow(mask, cmap='gray')
-    plt.axis('off')
+    # Plot the mask and the highlighted overlay
+    fig, axs = plt.subplots(1, 2)
+    axs[0].imshow(mask, cmap='gray')
+    axs[0].set_title('Mask')
+    axs[0].axis('off')
 
-    # Display the highlighted overlay
-    plt.subplot(1, 3, 3)
-    plt.title('Highlighted Overlay')
-    plt.imshow(highlighted_image, cmap='gray')
-    plt.axis('off')
+    axs[1].imshow(highlighted_image, cmap='gray')
+    axs[1].set_title('Highlighted Overlay')
+    axs[1].axis('off')
 
     # Show the plot
-    st.pyplot()
+    st.pyplot(fig)
 set_background('bgs/bg5.jpg')
 
 # set title
