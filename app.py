@@ -9,11 +9,9 @@ import joblib
 knn = joblib.load('knn_model.pkl')
 scaler = joblib.load('scaler.pkl')
 # Streamlit app title
-st.title('Mammogram Gray Range Highlighter')
-# Function to highlight the gray range
 def highlight_gray_range(image_np, lower_bound, upper_bound):
     mask = (image_np >= lower_bound) & (image_np <= upper_bound)
-    highlighted_image = np.where(mask, image_np, 0)
+    highlighted_image = np.where(mask, image_np, 255)  # Set non-highlighted pixels to white
     return highlighted_image
 
 # Streamlit app title
@@ -41,7 +39,6 @@ if uploaded_file is not None:
 
 # Instructions to the user
 st.write("Adjust the sliders in the sidebar to change the gray range for highlighting.")
-    
 
 set_background('bgs/bg5.jpg')
 
