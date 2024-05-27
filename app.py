@@ -8,9 +8,6 @@ from util import classify, set_background
 import joblib
 knn = joblib.load('knn_model.pkl')
 scaler = joblib.load('scaler.pkl')
-# Function to highlight the gray range and negate the image
-# Function to highlight the gray range
-# Function to highlight the gray range
 # Function to highlight the gray range
 def highlight_gray_range(image_np, gray_lower, gray_upper):
     mask = (image_np >= gray_lower) & (image_np <= gray_upper)
@@ -19,12 +16,8 @@ def highlight_gray_range(image_np, gray_lower, gray_upper):
 
 # Function to create the highlighted overlay
 def create_highlighted_overlay(original_image, highlighted_region, mask, highlight_color):
-    overlay = original_image.copy()
-    # Convert the boolean mask to indices
-    mask_indices = np.argwhere(mask)
-    # Assign the highlight color to the overlay image at the masked indices
-    for idx in mask_indices:
-        overlay[tuple(idx)] = highlight_color
+    overlay = np.stack((original_image,) * 3, axis=-1)  # Convert to RGB
+    overlay[np.where(mask)] = highlight_color
     return overlay
 
 # Main streamlit app
@@ -65,7 +58,7 @@ if uploaded_file is not None:
     axs[0].set_title('Mask')
     axs[0].axis('off')
 
-    axs[1].imshow(highlighted_overlay, cmap='gray')
+    axs[1].imshow(highlighted_overlay)
     axs[1].set_title('Highlighted Overlay')
     axs[1].axis('off')
 
