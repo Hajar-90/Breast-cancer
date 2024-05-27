@@ -34,7 +34,6 @@ if uploaded_file is not None:
     highlighted_image = highlight_gray_range(image_np, gray_lower, gray_upper)
 
     # Display the original image and the highlighted image
-    st.image(image_np, caption='Original Image', use_column_width=True, channels='GRAY')
     st.image(highlighted_image, caption='Highlighted Image', use_column_width=True, channels='GRAY')
 
 # Instructions to the user
