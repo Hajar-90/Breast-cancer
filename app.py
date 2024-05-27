@@ -9,11 +9,10 @@ import joblib
 knn = joblib.load('knn_model.pkl')
 scaler = joblib.load('scaler.pkl')
 # Function to highlight the gray range and negate the image
-def highlight_and_negate(image_np, gray_lower, gray_upper):
+def highlight_gray_range(image_np, gray_lower, gray_upper):
     mask = (image_np >= gray_lower) & (image_np <= gray_upper)
     highlighted_image = np.where(mask, image_np, 0)
-    negated_image = 255 - highlighted_image
-    return negated_image, mask
+    return highlighted_image, mask
 
 # Main streamlit app
 st.title('Mammogram Gray Range Highlighter')
@@ -31,14 +30,14 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file).convert('L')  # Convert to grayscale
     image_np = np.array(image)
 
-    # Apply the gray range filter and negate the image
-    negated_image, mask = highlight_and_negate(image_np, gray_lower, gray_upper)
+    # Apply the gray range filter and get the mask
+    highlighted_image, mask = highlight_gray_range(image_np, gray_lower, gray_upper)
 
     # Display the original image
     st.image(image_np, caption='Original Image', use_column_width=True, channels='GRAY')
 
-    # Display the highlighted and negated image
-    st.image(negated_image, caption='Negated Highlighted Image', use_column_width=True, channels='GRAY')
+    # Display the highlighted image
+    st.image(highlighted_image, caption='Highlighted Image', use_column_width=True, channels='GRAY')
 
     # Plot the mask and the highlighted overlay
     fig, axs = plt.subplots(1, 2)
@@ -46,8 +45,8 @@ if uploaded_file is not None:
     axs[0].set_title('Mask')
     axs[0].axis('off')
 
-    axs[1].imshow(negated_image, cmap='gray')
-    axs[1].set_title('Negated Highlighted Image')
+    axs[1].imshow(highlighted_image, cmap='gray')
+    axs[1].set_title('Highlighted Overlay')
     axs[1].axis('off')
 
     # Show the plot
