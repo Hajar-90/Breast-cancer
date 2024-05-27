@@ -15,7 +15,7 @@ gray_lower = st.sidebar.slider('Lower Bound of Gray Range', 0, 255, 50)
 gray_upper = st.sidebar.slider('Upper Bound of Gray Range', 0, 255, 150)
 
 # File uploader for mammogram image
-uploaded_file = st.file_uploader("Upload a Mammogram Image", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("Upload a Mammogram Image", type=["jpg", "jpeg", "png","pgm"])
 
 if uploaded_file is not None:
     # Load the image using PIL
