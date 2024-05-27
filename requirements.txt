@@ -1,3 +1,4 @@
+opencv-python
 keras
 tensorflow
 streamlit
@@ -6,5 +7,3 @@ numpy
 opencv-python
 joblib
 scikit-learn
-cv2
-opencv-python
