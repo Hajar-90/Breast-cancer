@@ -11,18 +11,17 @@ scaler = joblib.load('scaler.pkl')
 # Function to highlight the gray range and negate the image
 # Function to highlight the gray range
 # Function to highlight the gray range
+# Function to highlight the gray range
 def highlight_gray_range(image_np, gray_lower, gray_upper):
     mask = (image_np >= gray_lower) & (image_np <= gray_upper)
     highlighted_image = np.where(mask, image_np, 0)
     return highlighted_image, mask
 
-# Function to create the highlighted image with red background for areas outside the gray range
-def highlight_with_red_background(image_np, mask):
-    # Create an RGB image from the grayscale image
-    rgb_image = np.stack((image_np,) * 3, axis=-1)
-    # Highlight the background (outside the mask) with red
-    rgb_image[~mask] = [255, 0, 0]  # Red color for the background
-    return rgb_image
+# Function to create the highlighted overlay
+def create_highlighted_overlay(original_image, highlighted_region, mask, highlight_color):
+    overlay = original_image.copy()
+    overlay[mask] = highlight_color
+    return overlay
 
 # Main streamlit app
 st.title('Mammogram Gray Range Highlighter')
@@ -43,27 +42,32 @@ if uploaded_file is not None:
     # Apply the gray range filter and get the mask
     highlighted_image, mask = highlight_gray_range(image_np, gray_lower, gray_upper)
 
+    # Create the highlighted overlay with a specific color (e.g., red)
+    highlight_color = [255, 0, 0]  # Red color for the highlighted overlay
+    highlighted_overlay = create_highlighted_overlay(image_np, highlighted_image, mask, highlight_color)
+
     # Display the original image
     st.image(image_np, caption='Original Image', use_column_width=True, channels='GRAY')
 
     # Display the highlighted image
     st.image(highlighted_image, caption='Highlighted Image', use_column_width=True, channels='GRAY')
 
-    # Create the highlighted image with red background for areas outside the gray range
-    highlighted_with_red_background = highlight_with_red_background(highlighted_image, mask)
+    # Display the highlighted overlay
+    st.image(highlighted_overlay, caption='Highlighted Overlay', use_column_width=True)
 
-    # Plot the mask and the highlighted image with red background
+    # Plot the mask and the highlighted overlay
     fig, axs = plt.subplots(1, 2)
     axs[0].imshow(mask, cmap='gray')
     axs[0].set_title('Mask')
     axs[0].axis('off')
 
-    axs[1].imshow(highlighted_with_red_background)
-    axs[1].set_title('Highlighted Image with Red Background')
+    axs[1].imshow(highlighted_overlay)
+    axs[1].set_title('Highlighted Overlay')
     axs[1].axis('off')
 
     # Show the plot
     st.pyplot(fig)
+
 set_background('bgs/bg5.jpg')
 
 # set title
